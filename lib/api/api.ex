@@ -3,6 +3,7 @@ defmodule Stonks.Api do
 
   use Plug.Router
 
+  plug CORSPlug
   plug Plug.Parsers, parsers: [:urlencoded, :json],
                    pass: ["text/*"],
                    json_decoder: Poison

@@ -87,18 +87,18 @@ defmodule Stonks.Integration.Marketstack do
     symbols
     |> build_url()
     |> build_past_date(past_date)
-    #|> Http.get()
+    |> Http.get()
 
-    {:ok, %{body: mock_past()}}
+    #{:ok, %{body: mock_past()}}
 
   end
 
   defp request(symbols) do
     symbols
     |> build_url()
-    #|> Http.get()
+    |> Http.get()
 
-    {:ok, %{body: mock_current()}}
+    # {:ok, %{body: mock_current()}}
   end
 
   defp build_url(symbols) do

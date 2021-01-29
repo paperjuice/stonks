@@ -18,7 +18,7 @@ defmodule Stonks.Api.Worth do
 
     markets =
       portfolio_allocation
-      |> Map.keys()
+      |> build_portfolio_allocation()
       |> Marketstack.get_markets(start_date)
 
     potential_gain =
@@ -29,7 +29,7 @@ defmodule Stonks.Api.Worth do
       )
 
     json_resp =
-      build_response(markets, potential_gain)
+      build_response(potential_gain)
 
 
     conn
@@ -37,29 +37,17 @@ defmodule Stonks.Api.Worth do
     |> send_resp(200, json_resp)
   end
 
-
   # ---------------------------------------------
   #                    PRIVATE
   # ---------------------------------------------
+  #TODO: handle unhappy path
+  defp build_response(potential_gain) do
+    Poison.encode!(potential_gain)
+  end
 
-  defp build_response(markets, potential_gain) do
-    resp_markets=
-      Enum.map(markets, fn {k, market} ->
-        %{
-          current_close: market["current_close"],
-          current_date: market["current_date"],
-          past_close: market["past_close"],
-          past_date: market["past_date"],
-          potential_gain: Map.get(potential_gain, k)
-        }
-      end)
-
-    Poison.encode!(
-      %{
-        total: potential_gain["total"],
-        markets: resp_markets
-      }
-    )
-
+  defp build_portfolio_allocation(list) do
+    Enum.reduce(list, [], fn pair, acc ->
+      acc ++ [pair["symbol"]]
+    end)
   end
 end
