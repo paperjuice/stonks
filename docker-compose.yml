@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+  stonks:
+    container_name: "stonks"
+    image: stonks
+    environment:
+      - MARKETSTACK_API_KEY=7dec887e6dc1144dfc581840c90f5641
+    ports:
+      - "9980:9900"
+    build:
+      context: .
+    working_dir: /opt/stonks
+    tty: true
+    stdin_open: true
+    restart: always
+    networks:
+      - stonks_network
+
+  stonks_fe:
+    container_name: "stonks_fe"
+    image: stonks_fe
+    ports:
+    - 8080:80
+    build:
+      context: frontend/
+    working_dir: /opt/stonks_fe
+    tty: true
+    stdin_open: true
+    restart: always
+    networks:
+      - stonks_network
+
+networks:
+  stonks_network:
+    name: stonks_network
+

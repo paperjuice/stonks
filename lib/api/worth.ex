@@ -10,12 +10,16 @@ defmodule Stonks.Api.Worth do
     options
   end
 
-  def call(conn = %{ body_params: %{
-    "initial_balance" => initial_balance,
-    "start_date" => start_date,
-    "portfolio_allocation" => portfolio_allocation
-  }}, _opts) do
-
+  def call(
+        conn = %{
+          body_params: %{
+            "initial_balance" => initial_balance,
+            "start_date" => start_date,
+            "portfolio_allocation" => portfolio_allocation
+          }
+        },
+        _opts
+      ) do
     markets =
       portfolio_allocation
       |> build_portfolio_allocation()
@@ -28,9 +32,7 @@ defmodule Stonks.Api.Worth do
         markets
       )
 
-    json_resp =
-      build_response(potential_gain)
-
+    json_resp = build_response(potential_gain)
 
     conn
     |> put_resp_content_type("text/plain")
@@ -40,7 +42,7 @@ defmodule Stonks.Api.Worth do
   # ---------------------------------------------
   #                    PRIVATE
   # ---------------------------------------------
-  #TODO: handle unhappy path
+  # TODO: handle unhappy path
   defp build_response(potential_gain) do
     Poison.encode!(potential_gain)
   end

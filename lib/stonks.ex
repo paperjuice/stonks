@@ -31,8 +31,9 @@ defmodule Stonks do
   alias Stonks.Api
 
   def start(_type, _args) do
+    IO.inspect("Started successfully")
     children = [
-       {Plug.Cowboy, scheme: :http, plug: Api, options: [port: 9990]}
+      {Plug.Cowboy, scheme: :http, plug: Api, options: [port: 9900]}
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one)

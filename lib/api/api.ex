@@ -3,18 +3,23 @@ defmodule Stonks.Api do
 
   use Plug.Router
 
-  plug CORSPlug
-  plug Plug.Parsers, parsers: [:urlencoded, :json],
-                   pass: ["text/*"],
-                   json_decoder: Poison
-  plug :match
-  plug :dispatch
+  plug(CORSPlug)
+  plug(Stonks.Api.Log)
+
+  plug(Plug.Parsers,
+    parsers: [:urlencoded, :json],
+    pass: ["text/*"],
+    json_decoder: Poison
+  )
+
+  plug(:match)
+  plug(:dispatch)
 
   get "/health" do
     send_resp(conn, 200, "big healthy boi")
   end
 
-  post "/worth", to: Stonks.Api.Worth
+  post("/worth", to: Stonks.Api.Worth)
 
   match _ do
     send_resp(conn, 404, "oops")
