@@ -5596,6 +5596,11 @@ var $author$project$Main$responseDecoder = A3(
 var $author$project$Main$HandleResponse = function (a) {
 	return {$: 'HandleResponse', a: a};
 };
+var $author$project$Main$bePort = '9900';
+var $author$project$Main$beUrl = 'http://stonks';
+var $elm$core$String$concat = function (strings) {
+	return A2($elm$core$String$join, '', strings);
+};
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
 		return {$: 'BadStatus_', a: a, b: b};
@@ -6092,11 +6097,6 @@ var $elm$http$Http$expectString = function (toMsg) {
 		toMsg,
 		$elm$http$Http$resolve($elm$core$Result$Ok));
 };
-var $elm$http$Http$Header = F2(
-	function (a, b) {
-		return {$: 'Header', a: a, b: b};
-	});
-var $elm$http$Http$header = $elm$http$Http$Header;
 var $elm$http$Http$Request = function (a) {
 	return {$: 'Request', a: a};
 };
@@ -6357,6 +6357,7 @@ var $author$project$Main$requestEncoder = function (requestData) {
 	}
 };
 var $elm$http$Http$stringBody = _Http_pair;
+var $author$project$Main$worthEndpoint = 'worth';
 var $author$project$Main$sendRequest = function (requestData) {
 	var jsonPayload = A2(
 		$elm$http$Http$stringBody,
@@ -6369,16 +6370,16 @@ var $author$project$Main$sendRequest = function (requestData) {
 		{
 			body: jsonPayload,
 			expect: $elm$http$Http$expectString($author$project$Main$HandleResponse),
-			headers: _List_fromArray(
-				[
-					A2($elm$http$Http$header, 'Access-Control-Allow-Origin', '*'),
-					A2($elm$http$Http$header, 'Access-Control-Allow-Methods', 'GET, POST, PATCH, PUT, DELETE, OPTIONS'),
-					A2($elm$http$Http$header, 'Access-Control-Allow-Methods', 'Origin, Content-Type, X-Auth-Toke')
-				]),
+			headers: _List_Nil,
 			method: 'POST',
 			timeout: $elm$core$Maybe$Nothing,
 			tracker: $elm$core$Maybe$Nothing,
-			url: 'http://localhost:9990/worth'
+			url: A2(
+				$elm$core$Debug$log,
+				'URL',
+				$elm$core$String$concat(
+					_List_fromArray(
+						[$author$project$Main$beUrl, ':', $author$project$Main$bePort, '/', $author$project$Main$worthEndpoint])))
 		});
 };
 var $author$project$Main$update = F2(
@@ -6650,9 +6651,6 @@ var $author$project$Main$buildPortfolioAllocation = F2(
 			}
 		}
 	});
-var $elm$core$String$concat = function (strings) {
-	return A2($elm$core$String$join, '', strings);
-};
 var $elm$core$Basics$ge = _Utils_ge;
 var $elm$core$Basics$not = _Basics_not;
 var $elm$core$Basics$negate = function (n) {
@@ -6978,7 +6976,8 @@ var $author$project$Main$buildResponseDataView = function (dataList) {
 											_List_fromArray(
 												[
 													'Finance reserved for this stocks: ',
-													A2($myrho$elm_round$Round$round, 2, d.reservedBalance)
+													A2($myrho$elm_round$Round$round, 2, d.reservedBalance),
+													'$'
 												])))
 									]))
 							])),
@@ -7202,7 +7201,7 @@ var $author$project$Main$homePage = function (model) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Portfolio Allocation: ')
+								$elm$html$Html$text('Portfolio Allocation (please make sure the total allocation is 100%): ')
 							])),
 						A2(
 						$elm$html$Html$div,

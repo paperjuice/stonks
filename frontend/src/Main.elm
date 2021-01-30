@@ -14,6 +14,10 @@ import Round
 
 -- TODO: validate that percentage allocation does not go past 100%
 
+--TODO: use env variables
+beUrl = "http://localhost"
+bePort = "9980"
+worthEndpoint = "worth"
 
 -- MAIN
 main =
@@ -141,12 +145,8 @@ sendRequest requestData =
   in
    Http.request
       { method = "POST"
-      , headers =
-      [ (Http.header "Access-Control-Allow-Origin" "*")
-      , (Http.header "Access-Control-Allow-Methods" "GET, POST, PATCH, PUT, DELETE, OPTIONS")
-      , (Http.header "Access-Control-Allow-Methods" "Origin, Content-Type, X-Auth-Toke")
-      ]
-      , url = "http://localhost:9990/worth"
+      , headers = [ ]
+      , url = Debug.log "URL" (String.concat [beUrl, ":", bePort, "/", worthEndpoint])
       , body = jsonPayload
       , expect = Http.expectString HandleResponse
       , timeout = Nothing
@@ -254,7 +254,7 @@ homePage model =
             ]
       , div [ ]
             [ div [ ]
-                  [ text "Portfolio Allocation: " ]
+                  [ text "Portfolio Allocation (please make sure the total allocation is 100%): " ]
             , div [ ] (buildPortfolioAllocation (Dict.toList model.request.portfolioAllocation) [])
             ]
       , br [] []
@@ -314,7 +314,7 @@ buildResponseDataView dataList =
               , span [ ] [ text d.symbol ]
               ]
         , div [ ]
-              [ span [ ] [ text (String.concat ["Finance reserved for this stocks: ", (Round.round 2 d.reservedBalance)]) ]
+              [ span [ ] [ text (String.concat ["Finance reserved for this stocks: ", (Round.round 2 d.reservedBalance), "$"]) ]
               ]
         , div [ ]
               [ span [ ] [ text (String.concat ["On  ", d.pastDate, " one stock was worth ", (Round.round 2 d.pastClose), "$"]) ]
