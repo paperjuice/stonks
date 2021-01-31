@@ -4,7 +4,7 @@ import Browser
 import Html exposing (Html, text, pre, div, input, span, button, br)
 import Http exposing (stringBody)
 import Html.Events exposing (onInput, onClick)
-import Html.Attributes exposing (value, placeholder, type_)
+import Html.Attributes exposing (value, placeholder, type_, style)
 import Dict exposing (Dict)
 import Json.Encode as Encode
 import Json.Decode as Decode exposing (Decoder, int, float, list, string)
@@ -15,7 +15,7 @@ import Round
 -- TODO: validate that percentage allocation does not go past 100%
 -- TODO: use env variables
 beUrl = "http://localhost"
-bePort = "9900"
+bePort = "9980"
 worthEndpoint = "worth"
 historicWorthEndpoint = "historical_worth"
 
@@ -52,6 +52,7 @@ type alias Model =
   , state : State
   , portfolioCount : Int
   , response: Response
+  , error: String
   }
 
 type alias Request =
@@ -67,7 +68,7 @@ type alias Portfolio =
 
 init : () -> (Model, Cmd Msg)
 init _ =
-   ( Model (Request "" "" (Dict.singleton 1 (Portfolio "" ""))) "" Success 1 (Response 0 "" [])
+   ( Model (Request "" "" (Dict.singleton 1 (Portfolio "" ""))) "" Success 1 (Response 0 "" []) ""
    ,Cmd.none
    )
 
@@ -197,25 +198,30 @@ update msg model =
                   decode = Decode.decodeString responseDecoder json
 
                   newResponse =
-                    case (Debug.log "hello" decode) of
+                    case decode of
                       Ok response -> response
 
                       Err _ -> Response 0 "" []
               in
               ({model | response = newResponse, state = Success}, Cmd.none)
 
-            Err _ ->
-              (model, Cmd.none)
+            Err _ -> (
+              { model
+              | state = Error
+              , error = "Unexpected response from server. Please try again"
+              , response = Response 0 "" []
+              }, Cmd.none
+              )
 
         StartDate newStartDate ->
           let
-              newRequest = {req | startDate = (Debug.log "date" newStartDate)}
+              newRequest = {req | startDate = newStartDate}
           in
               ({model | request = newRequest}, Cmd.none)
 
         InitialBalance newBalance ->
           let
-              newRequest = {req | initialBalance = (Debug.log "balance" newBalance)}
+              newRequest = {req | initialBalance = newBalance}
           in
               ({model | request = newRequest}, Cmd.none)
 
@@ -299,11 +305,13 @@ homePage model =
       , br [][]
       , div [ ] [ text "-------- RESPONSE ---------" ]
       , buildResponseView model.response
+      , buildErrorMessage model.state model.error
       ]
 
+buildErrorMessage : State -> String -> Html Msg
 buildErrorMessage state error =
   if state == Error then
-    div [ ]
+    div [ style "background-color" "red" ]
         [ span [ ] [ text error ]
         , button [ onClick OkError ] [ text "Okey dokey" ]
         ]
@@ -335,7 +343,10 @@ buildHistoricalKeyView historicalKey =
   if String.isEmpty historicalKey  then
     div [ ] [ ]
   else
-    div [ ] [ text (String.concat ["Historical key: ", historicalKey])]
+    div [ ]
+        [  span [ ] [ text "Historical key: " ]
+        , span [ style "background-color" "#D5CAD6" ] [ text historicalKey ]
+        ]
 
 buildResponseDataView : List DataResponse -> List (Html msg)
 buildResponseDataView dataList =

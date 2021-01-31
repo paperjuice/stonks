@@ -35,6 +35,7 @@ defmodule Stonks do
 
   def start(_type, _args) do
     Logger.info("Stonks started successfully")
+
     children = [
       {Plug.Cowboy, scheme: :http, plug: Api, options: [port: 9900]},
       Storage

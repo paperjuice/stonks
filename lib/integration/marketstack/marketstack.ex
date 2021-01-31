@@ -22,12 +22,12 @@ defmodule Stonks.Integration.Marketstack do
         res || Task.shutdown(task, :brutal_kill)
       end)
 
+    # TODO: Required response data validation
     # Order is guaranteed
     with {:ok, past_stocks} <- handle_response(past_result),
          {:ok, current_stocks} <- handle_response(current_result),
-         data <- build_past_data(past_stocks),
-         {:ok, full} <- build_current_data(data, current_stocks) do
-      full
+         {:ok, data} <- build_past_data(past_stocks) do
+      {:ok, build_current_data(data, current_stocks)}
     end
   end
 
@@ -47,8 +47,12 @@ defmodule Stonks.Integration.Marketstack do
         "past_date" => market["date"]
       }
 
-      Map.put(acc, market["symbol"], past)
+      {:ok, Map.put(acc, market["symbol"], past)}
     end)
+  end
+
+  defp build_past_data(%{"error" => %{"code" => code, "message" => _msg}}) do
+    {:error, code}
   end
 
   defp build_current_data(past_data, %{"data" => current_data_list}) do

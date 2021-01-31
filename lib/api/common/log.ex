@@ -6,6 +6,7 @@ defmodule Stonks.Api.Log do
   require Logger
 
   def init([]), do: false
+
   def call(conn, _opts) do
     Logger.info("Request successfully registerd for #{inspect(conn.request_path)} endpoint.")
 
