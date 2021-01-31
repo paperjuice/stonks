@@ -41,6 +41,7 @@ defmodule Stonks.MixProject do
       {:uuid, "~> 1.1"},
       {:cors_plug, "~> 2.0"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
+      {:nanoid, "~> 2.0.5"},
 
       # Text
       {:excoveralls, "~> 0.10", only: :test}

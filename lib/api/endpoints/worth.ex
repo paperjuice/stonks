@@ -1,8 +1,9 @@
-defmodule Stonks.Api.Worth do
+defmodule Stonks.Api.Endpoints.Worth do
   @moduledoc false
 
   alias Stonks.Integration.Marketstack
   alias Stonks.Api.Common.Math
+  alias Stonks.Storage
 
   import Plug.Conn
 
@@ -32,6 +33,10 @@ defmodule Stonks.Api.Worth do
         markets
       )
 
+    historical_key = Storage.insert_table(potential_gain)
+    potential_gain =
+      Map.put(potential_gain, :historical_key, historical_key)
+
     json_resp = build_response(potential_gain)
 
     conn
@@ -39,12 +44,22 @@ defmodule Stonks.Api.Worth do
     |> send_resp(200, json_resp)
   end
 
+  def call(conn, _) do
+    json_resp =
+      build_response(
+        #TODO: Create error struct
+        %{reason: "Unexpected request format"}
+      )
+
+    send_resp(conn, 422, json_resp)
+  end
+
   # ---------------------------------------------
   #                    PRIVATE
   # ---------------------------------------------
   # TODO: handle unhappy path
-  defp build_response(potential_gain) do
-    Poison.encode!(potential_gain)
+  defp build_response(response) do
+    Poison.encode!(response)
   end
 
   defp build_portfolio_allocation(list) do

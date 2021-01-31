@@ -3,9 +3,6 @@ defmodule Stonks.Integration.Marketstack do
 
   alias Stonks.Integration.Shared.Http
 
-  # TODO: This wont work when api_key is part of sys env var
-  @api_key Application.get_env(:stonks, :marketstack_api_key)
-
   def get_markets(symbols, past_date) do
     async_requests(symbols, past_date)
   end
@@ -34,9 +31,9 @@ defmodule Stonks.Integration.Marketstack do
     end
   end
 
-  def handle_response(nil), do: {:error, :timeout}
+  defp handle_response(nil), do: {:error, :timeout}
 
-  def handle_response({:ok, {:ok, %{body: body}}}) do
+  defp handle_response({:ok, {:ok, %{body: body}}}) do
     Poison.decode(body)
   end
 

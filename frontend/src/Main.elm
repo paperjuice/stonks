@@ -8,16 +8,16 @@ import Html.Attributes exposing (value, placeholder, type_)
 import Dict exposing (Dict)
 import Json.Encode as Encode
 import Json.Decode as Decode exposing (Decoder, int, float, list, string)
-import Json.Decode.Pipeline exposing (required)
+import Json.Decode.Pipeline exposing (required, optional)
 import Round
 
 
 -- TODO: validate that percentage allocation does not go past 100%
-
---TODO: use env variables
+-- TODO: use env variables
 beUrl = "http://localhost"
-bePort = "9980"
+bePort = "9900"
 worthEndpoint = "worth"
+historicWorthEndpoint = "historical_worth"
 
 -- MAIN
 main =
@@ -39,6 +39,7 @@ type Msg
   | SendRequest
   | HandleResponse (Result Http.Error String)
   | OkError
+  | HistoricalKey String
 
 type State
   = Success
@@ -47,6 +48,7 @@ type State
 
 type alias Model =
   { request : Request
+  , historicalKey : String
   , state : State
   , portfolioCount : Int
   , response: Response
@@ -65,7 +67,7 @@ type alias Portfolio =
 
 init : () -> (Model, Cmd Msg)
 init _ =
-   ( Model (Request "" "" (Dict.singleton 1 (Portfolio "" ""))) Success 1 (Response 0 [])
+   ( Model (Request "" "" (Dict.singleton 1 (Portfolio "" ""))) "" Success 1 (Response 0 "" [])
    ,Cmd.none
    )
 
@@ -104,6 +106,7 @@ portfolioAllocationEncoder (_, portfolioAllocation) =
 -- DECODER --
 type alias Response =
   { total : Float
+  , historicalKey : String
   , data : List DataResponse
   }
 
@@ -123,6 +126,7 @@ responseDecoder : Decoder Response
 responseDecoder =
   Decode.succeed Response
   |> required "total" float
+  |> optional  "historical_key" string ""
   |> required "data" (list dataDecoder)
 
 dataDecoder : Decoder DataResponse
@@ -137,21 +141,35 @@ dataDecoder =
   |> required "current_date" string
   |> required "current_close" float
 
-sendRequest : Request -> Cmd Msg
-sendRequest requestData =
+sendRequest : String -> Request -> Cmd Msg
+sendRequest historicalKey requestData =
   let
-    jsonPayload = stringBody "application/json" (Encode.encode 0 (requestEncoder requestData))
-
+    worthPayload = stringBody "application/json" (Encode.encode 0 (requestEncoder requestData))
   in
+    if String.isEmpty historicalKey then
+      postRequest worthEndpoint worthPayload
+    else
+      getHistoricalWorthRequest historicalKey
+
+
+postRequest : String -> Http.Body -> Cmd Msg
+postRequest endpoint payload =
    Http.request
       { method = "POST"
       , headers = [ ]
-      , url = Debug.log "URL" (String.concat [beUrl, ":", bePort, "/", worthEndpoint])
-      , body = jsonPayload
+      , url = Debug.log "URL" (String.concat [beUrl, ":", bePort, "/", endpoint])
+      , body = payload
       , expect = Http.expectString HandleResponse
       , timeout = Nothing
       , tracker = Nothing
       }
+
+getHistoricalWorthRequest : String -> Cmd Msg
+getHistoricalWorthRequest key =
+  Http.get
+    { url = Debug.log "URL" (String.concat [beUrl, ":", bePort, "/", historicWorthEndpoint, "/", key])
+    , expect = Http.expectString HandleResponse
+    }
 
 -- UPDATE
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -166,8 +184,11 @@ update msg model =
         OkError ->
           ({model | state = Success}, Cmd.none )
 
+        HistoricalKey newHistKey ->
+          ({model | historicalKey = newHistKey}, Cmd.none)
+
         SendRequest ->
-          ({model | state = Loading}, sendRequest model.request)
+          ({model | state = Loading}, sendRequest model.historicalKey model.request)
 
         HandleResponse result ->
           case (Debug.log "resp" result) of
@@ -179,7 +200,7 @@ update msg model =
                     case (Debug.log "hello" decode) of
                       Ok response -> response
 
-                      Err _ -> Response 0 []
+                      Err _ -> Response 0 "" []
               in
               ({model | response = newResponse, state = Success}, Cmd.none)
 
@@ -263,6 +284,12 @@ homePage model =
             ]
       , div [ ] [ text "--------------------------------" ]
       , br [] []
+      , div [ ] [ text "OR" ]
+      , br [] []
+      , div [ ]
+            [ span [ ] [ text "Historical key: " ]
+            , input [ type_ "text", placeholder "PAJTtcDHBMz4lKTR", value model.historicalKey, onInput HistoricalKey] [ ]
+            ]
       , br [] []
       , div [ ]
             [ button [ onClick SendRequest ] [ text "SEND REQUEST" ]
@@ -294,13 +321,21 @@ buildResponseView : Response -> Html msg
 buildResponseView response =
   if response.total /= 0 then
     div [ ]
-        [ div [ ]
+        [ buildHistoricalKeyView response.historicalKey
+          , div [ ]
               [  span [ ] [ text (String.concat ["Total hypotetical worth of the stocks today is: ", (Round.round 2 response.total), "$"])]
               ]
         , div [ ] (buildResponseDataView response.data)
         ]
   else
     div [ ] [ ]
+
+buildHistoricalKeyView : String -> Html msg
+buildHistoricalKeyView historicalKey =
+  if String.isEmpty historicalKey  then
+    div [ ] [ ]
+  else
+    div [ ] [ text (String.concat ["Historical key: ", historicalKey])]
 
 buildResponseDataView : List DataResponse -> List (Html msg)
 buildResponseDataView dataList =

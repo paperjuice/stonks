@@ -1,6 +1,10 @@
 defmodule Stonks.Api do
   @moduledoc false
 
+  alias Stonks.Api.Endpoints.{
+    Worth,
+    HistoricalWorth
+  }
   use Plug.Router
 
   plug(CORSPlug)
@@ -19,7 +23,9 @@ defmodule Stonks.Api do
     send_resp(conn, 200, "big healthy boi")
   end
 
-  post("/worth", to: Stonks.Api.Worth)
+  post("/worth", to: Worth)
+
+  get "/historical_worth/:key", to: HistoricalWorth
 
   match _ do
     send_resp(conn, 404, "oops")

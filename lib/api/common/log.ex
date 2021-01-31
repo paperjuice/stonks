@@ -1,5 +1,7 @@
 defmodule Stonks.Api.Log do
-  @moduledoc false
+  @moduledoc """
+  Shared plug that logs each established connection
+  """
 
   require Logger
 
