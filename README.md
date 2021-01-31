@@ -1,6 +1,7 @@
 [![Build Status](https://paperjuice.semaphoreci.com/badges/stonks/branches/master.svg)](https://paperjuice.semaphoreci.com/projects/stonks)
 
 # Stonks
+![alt text](https://compote.slate.com/images/926e5009-c10a-48fe-b90e-fa0760f82fcd.png?width=1200&rect=680x453&offset=0x30)
 
 Stonks is an application that allows the user to input an initial financial balance, a date in the past and portfolio allocation.
 The response generated will contain how much the stocks are worth today.
