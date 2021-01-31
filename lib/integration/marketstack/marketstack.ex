@@ -1,7 +1,7 @@
 defmodule Stonks.Integration.Marketstack do
   @moduledoc false
 
-  @http Application.get_env(:stonks, :http_client)
+  @http Application.compile_env(:stonks, :http_client)
 
   @type symbol :: String.t()
   @type current_close :: String.t()

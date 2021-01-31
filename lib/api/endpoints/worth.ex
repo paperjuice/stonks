@@ -1,8 +1,8 @@
 defmodule Stonks.Api.Endpoints.Worth do
   @moduledoc false
 
-  alias Stonks.Integration.Marketstack
   alias Stonks.Api.Common.Math
+  alias Stonks.Integration.Marketstack
   alias Stonks.Storage
 
   import Plug.Conn
