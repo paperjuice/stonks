@@ -44,7 +44,8 @@ defmodule Stonks.MixProject do
       {:nanoid, "~> 2.0.5"},
 
       # Text
-      {:excoveralls, "~> 0.10", only: :test}
+      {:excoveralls, "~> 0.10", only: :test},
+      {:mox, "~> 1.0", only: :test}
     ]
   end
 end

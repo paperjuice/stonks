@@ -1,6 +1,6 @@
 defmodule Stonks.Integration.Marketstack.Request do
   @moduledoc """
-  TODO: Add type
+  TODO: Add type and use it
   """
 
   @defstruct [

@@ -1,8 +1,24 @@
 defmodule Stonks.Integration.Marketstack do
   @moduledoc false
 
-  alias Stonks.Integration.Shared.Http
+  @http Application.get_env(:stonks, :http_client)
 
+  @type symbol :: String.t()
+  @type current_close :: String.t()
+  @type current_date :: String.t()
+  @type past_close :: String.t()
+  @type past_date :: String.t()
+
+  @type t :: %{
+          symbol() => %{
+            current_close() => float(),
+            current_date() => String.t(),
+            past_close() => float(),
+            past_date() => String.t()
+          }
+        }
+
+  @spec get_markets(list(String.t()), String.t()) :: {:error, String.t()} | {:ok, list(t())}
   def get_markets(symbols, past_date) do
     async_requests(symbols, past_date)
   end
@@ -40,15 +56,18 @@ defmodule Stonks.Integration.Marketstack do
   # I use adj_close instead of close because I saw big discrepancies between `close`
   # and all the other values
   defp build_past_data(%{"data" => list}) do
-    Enum.reduce(list, %{}, fn market, acc ->
-      # TODO: make it a struct
-      past = %{
-        "past_close" => market["adj_close"],
-        "past_date" => market["date"]
-      }
+    past_data =
+      Enum.reduce(list, %{}, fn market, acc ->
+        # TODO: make it a struct
+        past = %{
+          "past_close" => market["adj_close"],
+          "past_date" => market["date"]
+        }
 
-      {:ok, Map.put(acc, market["symbol"], past)}
-    end)
+        Map.put(acc, market["symbol"], past)
+      end)
+
+    {:ok, past_data}
   end
 
   defp build_past_data(%{"error" => %{"code" => code, "message" => _msg}}) do
@@ -72,17 +91,13 @@ defmodule Stonks.Integration.Marketstack do
     symbols
     |> build_url()
     |> build_past_date(past_date)
-    |> Http.get()
-
-    # {:ok, %{body: mock_past()}}
+    |> @http.get()
   end
 
   defp request(symbols) do
     symbols
     |> build_url()
-    |> Http.get()
-
-    # {:ok, %{body: mock_current()}}
+    |> @http.get()
   end
 
   defp build_url(symbols) do
@@ -112,16 +127,6 @@ defmodule Stonks.Integration.Marketstack do
 
   defp do_build_symbols([hd | tl], acc) do
     do_build_symbols(tl, acc <> hd <> ",")
-  end
-
-  # TODO: temporary so I don't burn through the free quota
-  defp mock_past do
-    "{\"pagination\":{\"limit\":2,\"offset\":0,\"count\":2,\"total\":238},\"data\":[{\"open\":395.96,\"high\":396.99,\"low\":385.96,\"close\":390.9,\"volume\":38306874.0,\"adj_high\":98.893919424,\"adj_low\":96.1462433333,\"adj_close\":97.3768435044,\"adj_open\":98.6373367972,\"adj_volume\":153227496.0,\"symbol\":\"AAPL\",\"exchange\":\"XNAS\",\"date\":\"2020-07-15T00:00:00+0000\"},{\"open\":1523.13,\"high\":1535.33,\"low\":1498.0,\"close\":1513.64,\"volume\":1761000.0,\"adj_high\":1535.33,\"adj_low\":1498.0,\"adj_close\":1513.64,\"adj_open\":1523.13,\"adj_volume\":1761000.0,\"symbol\":\"GOOG\",\"exchange\":\"XNAS\",\"date\":\"2020-07-15T00:00:00+0000\"}]}"
-  end
-
-  # TODO: temporary so I don't burn through the free quota
-  defp mock_current do
-    "{\"pagination\":{\"limit\":2,\"offset\":0,\"count\":2,\"total\":504},\"data\":[{\"open\":1920.67,\"high\":1929.58,\"low\":1867.53,\"close\":1899.4,\"volume\":1925807.0,\"adj_high\":1929.58,\"adj_low\":1867.53,\"adj_close\":1899.4,\"adj_open\":1920.67,\"adj_volume\":1925807.0,\"symbol\":\"GOOG\",\"exchange\":\"XNAS\",\"date\":\"2021-01-25T00:00:00+0000\"},{\"open\":143.07,\"high\":145.09,\"low\":136.54,\"close\":142.92,\"volume\":157611713.0,\"adj_high\":145.09,\"adj_low\":136.54,\"adj_close\":142.92,\"adj_open\":143.07,\"adj_volume\":157611713.0,\"symbol\":\"AAPL\",\"exchange\":\"XNAS\",\"date\":\"2021-01-25T00:00:00+0000\"}]}"
   end
 
   defp get_api_key,
