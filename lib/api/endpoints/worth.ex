@@ -1,9 +1,10 @@
 defmodule Stonks.Api.Endpoints.Worth do
   @moduledoc false
 
+  @marketstack Application.compile_env(:stonks, :marketstack)
+  @storage Application.compile_env(:stonks, :storage)
+
   alias Stonks.Api.Common.Math
-  alias Stonks.Integration.Marketstack
-  alias Stonks.Storage
 
   import Plug.Conn
 
@@ -23,9 +24,9 @@ defmodule Stonks.Api.Endpoints.Worth do
       ) do
     symbols = build_portfolio_allocation(portfolio_allocation)
 
-    with {:ok, markets} <- Marketstack.get_markets(symbols, start_date),
+    with {:ok, markets} <- @marketstack.get_markets(symbols, start_date),
          potential_gain <- Math.potential_gain(initial_balance, portfolio_allocation, markets),
-         {:ok, historical_key} <- Storage.insert_item(potential_gain),
+         {:ok, historical_key} <- @storage.insert_item(potential_gain),
          potential_gain <- Map.put(potential_gain, :historical_key, historical_key),
          {:ok, json_resp} <- build_response(potential_gain) do
       conn

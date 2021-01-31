@@ -1,6 +1,8 @@
 defmodule Stonks.Integration.Marketstack do
   @moduledoc false
 
+  @callback get_markets(list(String.t()), String.t()) :: {:error, String.t()} | {:ok, list(t())}
+
   @http Application.compile_env(:stonks, :http_client)
 
   @type symbol :: String.t()

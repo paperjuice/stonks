@@ -38,7 +38,6 @@ defmodule Stonks.MixProject do
       {:httpoison, "~> 1.8"},
       {:plug_cowboy, "~> 2.0"},
       {:poison, "~> 3.1"},
-      {:uuid, "~> 1.1"},
       {:cors_plug, "~> 2.0"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
       {:nanoid, "~> 2.0.5"},

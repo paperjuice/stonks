@@ -1,6 +1,8 @@
 defmodule Stonks.Storage do
   @moduledoc false
 
+  @callback insert_item(any()) :: {:error, String.t()} | {:ok, String.t()}
+
   alias :dets, as: Dets
 
   require Logger

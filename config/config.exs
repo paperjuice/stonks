@@ -6,6 +6,8 @@ config :logger, :console,
   metadata: [:error_code, :file]
 
 config :stonks,
-  http_client: Stonks.Integration.Shared.Http
+  http_client: Stonks.Integration.Shared.Http,
+  marketstack: Stonks.Integration.Marketstack,
+  storage: Stonks.Storage
 
 import_config "#{Mix.env()}.exs"

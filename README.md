@@ -73,6 +73,7 @@ Currently I am trying to deploy the project to Heroku but I am currently stuck o
 
 ## Improvements
 * move unit tests
+* more/better logs
 * integration tests
 * a bunch of the data strctures should be `structs` for extra validation and auto documenting code
 * add `@spec` to public function
