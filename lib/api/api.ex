@@ -2,8 +2,8 @@ defmodule Stonks.Api do
   @moduledoc false
 
   alias Stonks.Api.Endpoints.{
-    Worth,
-    HistoricalWorth
+    HistoricalWorth,
+    Worth
   }
 
   use Plug.Router

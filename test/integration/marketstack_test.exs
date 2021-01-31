@@ -1,8 +1,8 @@
 defmodule Stonks.Integration.MarketstackTest do
   @moduledoc false
 
-  alias Stonks.Integration.Shared.HttpMock
   alias Stonks.Integration.Marketstack
+  alias Stonks.Integration.Shared.HttpMock
 
   import Mox
 
@@ -36,17 +36,18 @@ defmodule Stonks.Integration.MarketstackTest do
       {:ok, data} = Marketstack.get_markets(symbols, past_date)
 
       assert data["AAPL"] == %{
-        "current_close" => 142.92,
-        "current_date" => "2021-01-25T00:00:00+0000",
-        "past_close" => 97.3768435044,
-        "past_date" => "2020-07-15T00:00:00+0000"
-      }
+               "current_close" => 142.92,
+               "current_date" => "2021-01-25T00:00:00+0000",
+               "past_close" => 97.3768435044,
+               "past_date" => "2020-07-15T00:00:00+0000"
+             }
+
       assert data["GOOG"] == %{
-        "current_close" => 1899.4,
-        "current_date" => "2021-01-25T00:00:00+0000",
-        "past_close" => 1513.64,
-        "past_date" => "2020-07-15T00:00:00+0000"
-      }
+               "current_close" => 1899.4,
+               "current_date" => "2021-01-25T00:00:00+0000",
+               "past_close" => 1513.64,
+               "past_date" => "2020-07-15T00:00:00+0000"
+             }
     end
   end
 

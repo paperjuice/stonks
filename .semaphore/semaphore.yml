@@ -1,0 +1,66 @@
+version: v1.0
+name: First pipeline
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: SetUp
+    dependencies: []
+    task:
+      jobs:
+        - name: Install Dependencies
+          commands:
+            - mix deps.get
+            - cache store
+      prologue:
+        commands:
+          - checkout
+          - sem-version elixir 1.11.1
+      secrets:
+        - name: common
+      env_vars:
+        - name: MIX_ENV
+          value: test
+
+  - name: Lint
+    task:
+      prologue:
+        commands:
+          - checkout
+          - sem-version elixir 1.11.1
+          - mix local.rebar --force
+          - cache restore
+      jobs:
+        - name: Format
+          commands:
+            - mix format --check-formatted
+        - name: Style guide
+          commands:
+            - mix credo --strict
+      env_vars:
+        - name: MIX_ENV
+          value: test
+    dependencies:
+      - SetUp
+
+  - name: Unit Tests
+    task:
+      jobs:
+        - name: Coveralls
+          commands:
+            - mix coveralls
+      prologue:
+        commands:
+          - checkout
+          - sem-version elixir 1.11.1
+          - mix local.rebar --force
+          - cache restore
+      secrets:
+        - name: common
+      env_vars:
+        - name: MIX_ENV
+          value: test
+    dependencies:
+      - SetUp
+
