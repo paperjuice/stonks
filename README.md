@@ -82,4 +82,6 @@ Currently I am trying to deploy the project to Heroku but I am currently stuck o
 * deployment to cloud
 * rebalancing feature
 * better undestanding of the `marketstack` API. They happen to return no data even if the date I am requesting is during the week
-* the exact same request made by the same user will get stored in the cache every time 
+* the exact same request made by the same user will get stored in the cache every time
+* better error handling on the fe
+* module to hold potential BE errors woth relevant http codes
