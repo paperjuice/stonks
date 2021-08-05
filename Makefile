@@ -1,3 +1,8 @@
+HEY ?= "$(HOME)"
+
+hello:
+	ls
+	echo $(HEY)
 up:
 	docker-compose up --build
 

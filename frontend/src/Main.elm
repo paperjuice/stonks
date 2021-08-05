@@ -243,7 +243,6 @@ update msg model =
 
               request = model.request
               newRequest = {request | portfolioAllocation = newPortfolio}
-
           in
               ( {model | request = newRequest} , Cmd.none )
 

@@ -10,6 +10,8 @@ services:
     build:
       context: .
     working_dir: /opt/stonks
+    env_file:
+      - .env
     tty: true
     stdin_open: true
     restart: always

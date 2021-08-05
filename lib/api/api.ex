@@ -2,6 +2,7 @@ defmodule Stonks.Api do
   @moduledoc false
 
   alias Stonks.Api.Endpoints.{
+    Fail,
     HistoricalWorth,
     Worth
   }
@@ -23,6 +24,8 @@ defmodule Stonks.Api do
   get "/health" do
     send_resp(conn, 200, "big healthy boi")
   end
+
+  get("/fail", to: Fail)
 
   post("/worth", to: Worth)
 
