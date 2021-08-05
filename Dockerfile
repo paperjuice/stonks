@@ -6,6 +6,8 @@ WORKDIR /opt/stonks
 
 COPY . /opt/stonks
 
+ENV MARKETSTACK_API_KEY=""
+
 RUN apk update && \
     apk --no-cache add curl && \
     apk add --no-cache git openssh && \

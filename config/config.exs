@@ -1,9 +1,12 @@
 import Config
 
 # TODO: add this to container env variables
-config :logger, :console,
-  format: "[$level] $message $metadata\n",
-  metadata: [:error_code, :file]
+#config :logger, :console,
+#format: "[$level] $message $metadata\n",
+#metadata: [:error_code, :file]
+
+config :logger, level: :info, truncate: :infinity
+
 
 config :stonks,
   http_client: Stonks.Integration.Shared.Http,
