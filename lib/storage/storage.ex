@@ -1,24 +1,16 @@
 defmodule Stonks.Storage do
   @moduledoc false
 
-  @callback insert_item(any()) :: {:error, String.t()} | {:ok, String.t()}
-
   alias :dets, as: Dets
 
   require Logger
 
   use GenServer
 
-  # Callbacks
+  @callback insert_item(any()) :: {:error, String.t()} | {:ok, String.t()}
 
   def start_link(_) do
     GenServer.start(__MODULE__, [], name: __MODULE__)
-  end
-
-  @impl true
-  def init(_) do
-    Process.flag(:trap_exit, true)
-    Dets.open_file(:disk_storage, type: :set)
   end
 
   def get_item(key) do
@@ -32,6 +24,12 @@ defmodule Stonks.Storage do
   # ---------------------------------------------
   #                   CALLBACKS
   # ---------------------------------------------
+  @impl true
+  def init(_) do
+    Process.flag(:trap_exit, true)
+    Dets.open_file(:disk_storage, type: :set)
+  end
+
   @impl true
   def handle_call({:get, key}, _from, table) do
     value = Dets.lookup(table, key)

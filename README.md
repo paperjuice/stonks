@@ -50,6 +50,38 @@ Port used is `9900`
 
 3. `cd` into frontend folder (inside the Main.elm file `bePort` needs to match the Elixir app port) and you can run it with `elm reactor` and browse to `http://localhost:8000/src/Main.elm`
 
+## API
+`Stonks` offer both a Json and a GraphQL API.
+Currently, the FE application uses only the Json API.
+If you want to check the GraphQL API you can browse to `http://localhost:9900/graphiql` where you will be able to use the in-browser GraphQL tool that allows you to explore the API.
+
+### Example query:
+```
+query WorthQuery($date: Date!, $balance: Float!, $alloc: [PortfolioAllocation]!){
+  worth(startDate: $date, initialBalance: $balance, portfolioAllocations: $alloc){
+    data {
+			symbol
+      pastDate
+      stockNum
+      pastClose
+      currentDate
+			currentClose
+      reservedBalance
+      currentStockWorth
+    }
+    total
+  }
+}
+
+----------- QUERY VARIABLES ---------------
+{
+	"date": "2022-10-25",
+  "alloc": [
+    {"symbol": "AAPL", "allocation": 100.0}
+  ],
+  "balance": 2000.0
+}
+```
 
 ## Misc
 The commands below are strictly for the Elixir application
@@ -74,6 +106,7 @@ Currently I am trying to deploy the project to Heroku but I am currently stuck o
 
 ## Improvements
 * move unit tests
+* add ex_doc
 * more/better logs
 * integration tests
 * a bunch of the data strctures should be `structs` for extra validation and auto documenting code
@@ -83,5 +116,5 @@ Currently I am trying to deploy the project to Heroku but I am currently stuck o
 * rebalancing feature
 * better undestanding of the `marketstack` API. They happen to return no data even if the date I am requesting is during the week
 * the exact same request made by the same user will get stored in the cache every time
+* rename some of the directories to match Phoenix naming convention
 * better error handling on the fe
-* module to hold potential BE errors woth relevant http codes

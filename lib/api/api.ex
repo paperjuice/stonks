@@ -13,10 +13,11 @@ defmodule Stonks.Api do
   plug(Stonks.Api.Log)
 
   plug(Plug.Parsers,
-    parsers: [:urlencoded, :json],
-    pass: ["text/*"],
+    parsers: [:urlencoded, :multipart, :json, Absinthe.Plug.Parser],
     json_decoder: Poison
   )
+
+  forward("/graphiql", to: Absinthe.Plug.GraphiQL, schema: Stonks.Api.GraphQL.Schema)
 
   plug(:match)
   plug(:dispatch)

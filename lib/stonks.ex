@@ -11,8 +11,8 @@ defmodule Stonks do
 
   def start(_type, _args) do
     Logger.info("Stonks started successfully")
-    port = System.get_env("PORT") || "9900"
-           |> IO.inspect([label: Port, limit: :infinity, printable_limit: :infinity])
+
+    port = Application.get_env(:stonks, :port)
 
     children = [
       {Plug.Cowboy, scheme: :http, plug: Api, options: [port: String.to_integer(port)]},

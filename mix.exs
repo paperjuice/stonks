@@ -35,12 +35,14 @@ defmodule Stonks.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:httpoison, "~> 1.8"},
-      {:plug_cowboy, "~> 2.0"},
-      {:poison, "~> 3.1"},
+      {:absinthe, "~> 1.5"},
+      {:absinthe_plug, "~> 1.5"},
       {:cors_plug, "~> 2.0"},
       {:credo, "~> 1.5", only: [:dev, :test], runtime: false},
+      {:httpoison, "~> 1.8"},
       {:nanoid, "~> 2.0.5"},
+      {:plug_cowboy, "~> 2.0"},
+      {:poison, "~> 3.1"},
 
       # Text
       {:excoveralls, "~> 0.10", only: :test},

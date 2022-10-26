@@ -1,8 +1,6 @@
 defmodule Stonks.Integration.Marketstack do
   @moduledoc false
 
-  @callback get_markets(list(String.t()), String.t()) :: {:error, String.t()} | {:ok, list(t())}
-
   @http Application.compile_env(:stonks, :http_client)
 
   @type symbol :: String.t()
@@ -20,19 +18,26 @@ defmodule Stonks.Integration.Marketstack do
           }
         }
 
-  @spec get_markets(list(String.t()), String.t()) :: {:error, String.t()} | {:ok, list(t())}
+  @callback get_markets(list(symbol()), past_date()) :: {:error, String.t()} | {:ok, list(t())}
+
+  @spec get_markets(list(symbol()), past_date()) :: {:error, String.t()} | {:ok, list(t())}
   def get_markets(symbols, past_date) do
     async_requests(symbols, past_date)
   end
 
-  #  The purpose of this function is to send 2 requests to marketstack async
-  #  From their documentation doesn't seem to exist a way to get a stock from the past and
+  # ---------------------------------------------
+  #                    PRIVATE
+  # ---------------------------------------------
+
+  #  The purpose of this function is to send 2 requests to marketstack asynchronously
+  #  From their documentation, it doesn't seem to exist a way to get a stock from the past and
   #  another one from present (list with to obj)
   defp async_requests(symbols, past_date) do
     past_request = Task.async(fn -> request(symbols, past_date) end)
     current_request = Task.async(fn -> request(symbols) end)
 
     tasks_with_results = Task.yield_many([past_request, current_request], 5000)
+    # TODO log error
 
     [past_result, current_result] =
       Enum.map(tasks_with_results, fn {task, res} ->
@@ -112,6 +117,7 @@ defmodule Stonks.Integration.Marketstack do
   end
 
   defp build_api_key(url, key), do: url <> "?access_key=#{key}"
+
   defp build_past_date(url, date), do: url <> "&date_to=#{date}"
 
   defp build_symbols(url, symbols) do

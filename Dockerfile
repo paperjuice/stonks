@@ -23,7 +23,7 @@ RUN mix local.hex --force && \
     mix deps.get && \
     MIX_ENV=prod mix release stonks --overwrite
 
-FROM alpine:3.13
+FROM alpine:3.16
 
 RUN apk update && \
     apk add --no-cache openssh && \

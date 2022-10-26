@@ -28,7 +28,7 @@ defmodule Stonks.Api.Endpoints.Worth do
          potential_gain <- Math.potential_gain(initial_balance, portfolio_allocation, markets),
          {:ok, historical_key} <- @storage.insert_item(potential_gain),
          potential_gain <- Map.put(potential_gain, :historical_key, historical_key),
-         {:ok, json_resp} <- build_response(potential_gain) do
+         {:ok, json_resp} <- Poison.encode(potential_gain) do
       conn
       |> put_resp_content_type("text/plain")
       |> send_resp(200, json_resp)
@@ -50,11 +50,6 @@ defmodule Stonks.Api.Endpoints.Worth do
   # ---------------------------------------------
   #                    PRIVATE
   # ---------------------------------------------
-  # TODO: handle unhappy path
-  defp build_response(response) do
-    Poison.encode(response)
-  end
-
   defp build_portfolio_allocation(list) do
     Enum.reduce(list, [], fn pair, acc ->
       acc ++ [pair["symbol"]]
