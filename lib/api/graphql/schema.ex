@@ -10,7 +10,6 @@ defmodule Stonks.Api.GraphQL.Schema do
     import_fields(:worth_queries)
   end
 
-
   # ---------------------------------------------
   #                 SHARED TYPES
   # ---------------------------------------------

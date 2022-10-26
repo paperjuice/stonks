@@ -14,5 +14,4 @@ config :stonks,
 
 config :stonks, :port, System.get_env("PORT") || "9900"
 
-
 import_config "#{Mix.env()}.exs"

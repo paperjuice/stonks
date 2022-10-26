@@ -1,7 +1,7 @@
 defmodule Stonks.Api.Common.Math do
   @moduledoc false
 
-  #TODO: Swap Floats for Decimals
+  # TODO: Swap Floats for Decimals
 
   def potential_gain(
         initial_balance,
