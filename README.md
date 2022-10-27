@@ -51,7 +51,7 @@ Port used is `9900`
 3. `cd` into frontend folder (inside the Main.elm file `bePort` needs to match the Elixir app port) and you can run it with `elm reactor` and browse to `http://localhost:8000/src/Main.elm`
 
 ## API
-`Stonks` offer both a Json and a GraphQL API.
+`Stonks` offers both a Json and a GraphQL API.
 Currently, the FE application uses only the Json API.
 If you want to check the GraphQL API you can browse to `http://localhost:9900/graphiql` where you will be able to use the in-browser GraphQL tool that allows you to explore the API.
 
