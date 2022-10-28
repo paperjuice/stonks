@@ -60,12 +60,12 @@ If you want to check the GraphQL API you can browse to `http://localhost:9900/gr
 query WorthQuery($date: Date!, $balance: Float!, $alloc: [PortfolioAllocation]!){
   worth(startDate: $date, initialBalance: $balance, portfolioAllocations: $alloc){
     data {
-			symbol
+      symbol
       pastDate
       stockNum
       pastClose
       currentDate
-			currentClose
+      currentClose
       reservedBalance
       currentStockWorth
     }
@@ -75,7 +75,7 @@ query WorthQuery($date: Date!, $balance: Float!, $alloc: [PortfolioAllocation]!)
 
 ----------- QUERY VARIABLES ---------------
 {
-	"date": "2022-10-25",
+  "date": "2022-10-25",
   "alloc": [
     {"symbol": "AAPL", "allocation": 100.0}
   ],
